@@ -1,40 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Malla Interactiva – Derecho</title>
-<style>
-    :root {
-        --gris: #dedede;
-        --cafe: #e6d6c2;
-        --rojo: #f2dede;
-        --verde: #e6f2e6;
-        --azul: #dfeeff;
-        --morado: #f0eaff;
-        --amarillo: #fff7d6;
+    <meta charset="UTF-8">
+    <title>Malla Interactiva - Derecho</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
-        --bg: #f5f3f1;
-        --card-border: #d7cfc6;
-        --text: #3f3127;
-    }
+<h1>Malla Curricular de Derecho</h1>
+<p>Haz clic en una materia para marcarla como cursada.  
+Las materias dependientes se desbloquearán automáticamente.</p>
 
-    * { box-sizing: border-box; }
-    body {
-        font-family: "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        margin: 0;
-        padding: 24px;
-    }
+<div id="semestres-container"></div>
 
-    header {
-        background: #8b6f56;
-        color: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+<script src="script.js"></script>
+</body>
+</html>        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
         text-align: center;
     }
     header h1 { margin: 0; font-size: 22px; }
