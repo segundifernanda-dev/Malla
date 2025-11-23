@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Malla Interactiva – Derecho</title>
+<style>
+    :root {
+        --gris: #dedede;
+        --cafe: #e6d6c2;
+        --rojo: #f2dede;
+        --verde: #e6f2e6;
+        --azul: #dfeeff;
+        --morado: #f0eaff;
+        --amarillo: #fff7d6;
+
+        --bg: #f5f3f1;
+        --card-border: #d7cfc6;
+        --text: #3f3127;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+        font-family: "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 24px;
+    }
+
+    header {
+        background: #8b6f56;
+        color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        text-align: center;
+    }
+    header h1 { margin: 0; font-size: 22px; }
+
+    main { max-width: 980px; margin: 18px auto; }
+
+    .semestre {
+        background: #fff;
+        border-left: 8px solid var(--card-border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .semestre h2 {
+        margin: 0 0 10px 0;
+        font-size: 18px;
+        color: #4b392c;
+    }
+
+    .materia {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 8px;
+        border: 1px solid var(--card-border);
+    }
+
+    .materia[data-area="general"]    { background: var(--gris); }
+    .materia[data-area="civil"]      { background: var(--cafe); }
+    .materia[data-area="penal"]      { background: var(--rojo); }
+    .materia[data-area="laboral"]    { background: var(--verde); }
+    .materia[data-area="constitucional"] { background: var(--azul); }
+    .materia[data-area="internacional"]  { background: var(--morado); }
+    .materia[data-area="lenguas"]    { background: var(--amarillo); }
+
+    .materia.bloqueada {
+        opacity: 0.5;
+        filter: grayscale(0.35);
+    }
+
+    .materia label { font-weight: 600; font-size: 14px; }
+    .materia .info { font-size: 12px; color: #333; }
+
+    footer {
+        max-width: 980px;
+        margin: 24px auto 0;
+        text-align: center;
+        color: #6b5a4a;
+        font-size: 13px;
+    }
+
+    /* Responsive */
+    @media (max-width:640px){
+        .materia { flex-direction: column; align-items: flex-start; }
+    }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Malla Interactiva – Licenciatura en Derecho</h1>
+  <div style="margin-top:8px;color:#fff9; font-size:13px">Marca las materias cursadas para liberar las que dependen de prerrequisitos.</div>
+</header>
+
+<main id="main">
+  <div id="malla"></div>
+</main>
+
+<footer>
+  <div>Generado por tu asistente — Malla Derecho</div>
+</footer>
+
+<script>
+/* ====== Datos de la malla ====== */
+const materias = [
+    /* 1ER */
+    {id:"TCDS-001", nombre:"Introducción a las ciencias sociales", req:[], area:"general", s:1},
+    {id:"TCDS-002", nombre:"Taller de técnicas de expresión oral y escrita", req:[], area:"general", s:1},
+    {id:"TCDS-003", nombre:"Derechos humanos, cultura y democracia", req:[], area:"constitucional", s:1},
+    {id:"LDES-002", nombre:"Introducción al derecho", req:[], area:"general", s:1},
+    {id:"LDES-004", nombre:"Historia del derecho", req:[], area:"general", s:1},
+    {id:"FGUS-002", nombre:"Desarrollo de habilidades del pensamiento complejo", req:[], area:"general", s:1},
+    {id:"FGUS-004", nombre:"Lengua extranjera I", req:[], area:"lenguas", s:1},
+
+    /* 2DO */
+    {id:"TCDS-005", nombre:"Métodos y técnicas de investigación en las ciencias sociales", req:[], area:"general", s:2},
+    {id:"LDES-008", nombre:"Derecho romano", req:[], area:"civil", s:2},
+    {id:"TCDS-004", nombre:"Protección de datos personales", req:[], area:"constitucional", s:2},
+    {id:"LDES-007", nombre:"Personas y familia", req:["LDES-002"], area:"civil", s:2},
+    {id:"FGUS-001", nombre:"Formación humana y social", req:[], area:"general", s:2},
+    {id:"LDES-006", nombre:"Teorías del estado", req:[], area:"constitucional", s:2},
+    {id:"FGUS-005", nombre:"Lengua extranjera II", req:["FGUS-004"], area:"lenguas", s:2},
+
+    /* 3ER */
+    {id:"LDES-253", nombre:"Relaciones individuales de trabajo", req:[], area:"laboral", s:3},
+    {id:"LDES-251", nombre:"Dogmática jurídica penal (parte general)", req:["LDES-008"], area:"penal", s:3},
+    {id:"LDES-252", nombre:"Bienes y sucesiones", req:["LDES-007"], area:"civil", s:3},
+    {id:"LDES-254", nombre:"Teoría general del derecho", req:["LDES-002"], area:"general", s:3},
+    {id:"LDES-009", nombre:"Teoría de la constitución", req:["LDES-006"], area:"constitucional", s:3},
+    {id:"LDES-010", nombre:"Sistemas jurídicos contemporáneos", req:["LDES-006"], area:"constitucional", s:3},
+    {id:"FGUS-006", nombre:"Lengua extranjera III", req:["FGUS-005"], area:"lenguas", s:3},
+
+    /* 4TO */
+    {id:"LDES-011", nombre:"Teoría del proceso", req:["TCDS-001"], area:"constitucional", s:4},
+    {id:"LDES-263", nombre:"Relaciones colectivas del trabajo", req:["LDES-253"], area:"laboral", s:4},
+    {id:"LDES-255", nombre:"Dogmática jurídica penal (parte especial)", req:["LDES-251"], area:"penal", s:4},
+    {id:"LDES-256", nombre:"Obligaciones", req:["LDES-252"], area:"civil", s:4},
+    {id:"LDES-283", nombre:"Filosofía del derecho", req:["LDES-254"], area:"general", s:4},
+    {id:"TCDS-006", nombre:"Sistema constitucional mexicano", req:["LDES-009"], area:"constitucional", s:4},
+    {id:"FGUS-007", nombre:"Lengua extranjera IV", req:["FGUS-006"], area:"lenguas", s:4},
+
+    /* 5TO */
+    {id:"LDES-264", nombre:"Derecho procesal del trabajo", req:["LDES-263"], area:"laboral", s:5},
+    {id:"LDES-266", nombre:"Derecho agrario", req:["LDES-263"], area:"laboral", s:5},
+    {id:"LDES-269", nombre:"Derecho procesal penal", req:["LDES-255","LDES-011"], area:"penal", s:5},
+    {id:"LDES-257", nombre:"Contratos civiles", req:["LDES-256"], area:"civil", s:5},
+    {id:"LDES-284", nombre:"Argumentación jurídica", req:["LDES-283"], area:"general", s:5},
+    {id:"LDES-276", nombre:"Derecho administrativo", req:["TCDS-006"], area:"constitucional", s:5},
+
+    /* 6TO */
+    {id:"LDES-267", nombre:"Derecho Procesal Agrario", req:["LDES-266"], area:"laboral", s:6},
+    {id:"LDES-271", nombre:"Derecho de Ejecución de las Penas", req:["LDES-269"], area:"penal", s:6},
+    {id:"LDES-258", nombre:"Derecho Procesal Civil", req:["LDES-257"], area:"civil", s:6},
+    {id:"LDES-260", nombre:"Derecho Mercantil", req:["LDES-257"], area:"civil", s:6},
+    {id:"LDES-273", nombre:"Amparo I", req:["LDES-284"], area:"constitucional", s:6},
+    {id:"LDES-277", nombre:"Derecho Contencioso Administrativo", req:["LDES-276"], area:"constitucional", s:6},
+    {id:"LDES-280", nombre:"Derecho Económico", req:["LDES-276"], area:"constitucional", s:6},
+
+    /* 7MO */
+    {id:"LDES-265", nombre:"Derecho de la Seguridad Social", req:["LDES-264","LDES-267"], area:"laboral", s:7},
+    {id:"LDES-270", nombre:"Medicina Forense", req:["LDES-269"], area:"penal", s:7},
+    {id:"LDES-259", nombre:"Derecho Procesal Familiar", req:["LDES-258"], area:"civil", s:7},
+    {id:"LDES-261", nombre:"Derecho Procesal Mercantil", req:["LDES-260"], area:"civil", s:7},
+    {id:"LDES-274", nombre:"Amparo II", req:["LDES-273"], area:"constitucional", s:7},
+    {id:"LDES-281", nombre:"Derecho Internacional Público", req:["LDES-280"], area:"internacional", s:7},
+    {id:"LDES-278", nombre:"Derecho Fiscal", req:["LDES-276"], area:"constitucional", s:7},
+
+    /* 8VO */
+    {id:"LDES-272", nombre:"Estrategias y Técnicas de Litigación Oral", req:["LDES-271","LDES-270"], area:"penal", s:8},
+    {id:"LDES-262", nombre:"Derecho Notarial y Registral", req:["LDES-259","LDES-261"], area:"civil", s:8},
+    {id:"LDES-268", nombre:"Derecho Ambiental", req:["LDES-276","LDES-281"], area:"internacional", s:8},
+    {id:"LDES-275", nombre:"Derecho Electoral", req:["LDES-276","LDES-274"], area:"constitucional", s:8},
+    {id:"LDES-282", nombre:"Derecho Internacional Privado", req:["LDES-281"], area:"internacional", s:8},
+    {id:"LDES-279", nombre:"Derecho Procesal Fiscal", req:["LDES-278","LDES-277"], area:"constitucional", s:8},
+];
+
+/* ====== Render por semestre ====== */
+const cont = document.getElementById("malla");
+
+for (let sem = 1; sem <= 8; sem++) {
+  const box = document.createElement("div");
+  box.className = "semestre";
+  const h = document.createElement("h2");
+  h.textContent = sem + "° Semestre";
+  box.appendChild(h);
+
+  materias.filter(m => m.s === sem).forEach(m => {
+    const mdiv = document.createElement("div");
+    mdiv.className = "materia bloqueada";
+    mdiv.dataset.id = m.id;
+    mdiv.dataset.area = m.area;
+
+    const label = document.createElement("label");
+    label.innerHTML = `<input type="checkbox" data-id="${m.id}"> ${m.nombre} <span style="color:#6b5a4a; font-weight:600;">(${m.id})</span>`;
+
+    const req = document.createElement("div");
+    req.className = "info";
+    req.textContent = "Requisito: " + (m.req.length ? m.req.join(", ") : "Ninguno");
+
+    mdiv.appendChild(label);
+    mdiv.appendChild(req);
+    box.appendChild(mdiv);
+  });
+
+  cont.appendChild(box);
+}
+
+/* ====== Funciones interactividad ====== */
+function leerTomadas() {
+  // si quieres persistencia en el navegador, usa localStorage
+  try {
+    return JSON.parse(localStorage.getItem("mallaTomadas") || "[]");
+  } catch {
+    return [];
+  }
+}
+function guardarTomadas(list) {
+  try { localStorage.setItem("mallaTomadas", JSON.stringify(list)); } catch {}
+}
+
+function actualizar() {
+  const tomadas = leerTomadas();
+  // marcar checkboxes segun tomadas
+  document.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+    chk.checked = tomadas.includes(chk.dataset.id);
+  });
+
+  materias.forEach(m => {
+    const div = document.querySelector(`[data-id="${m.id}"]`);
+    const ok = m.req.every(r => tomadas.includes(r));
+    div.classList.toggle("bloqueada", !ok);
+    const chk = div.querySelector('input[type="checkbox"]');
+    chk.disabled = !ok;
+  });
+}
+
+// eventos: cuando cambia un checkbox
+document.addEventListener("change", (e) => {
+  if (e.target.matches('input[type="checkbox"]')) {
+    const id = e.target.dataset.id;
+    let tomadas = leerTomadas();
+    if (e.target.checked) {
+      if (!tomadas.includes(id)) tomadas.push(id);
+    } else {
+      tomadas = tomadas.filter(x => x !== id);
+    }
+    guardarTomadas(tomadas);
+    actualizar();
+  }
+});
+
+// inicializar
+actualizar();
+
+/* Opcional: atajo para reiniciar (abrir consola y ejecutar resetMalla(); o agrego botón si quieres) */
+function resetMalla() {
+  localStorage.removeItem("mallaTomadas");
+  actualizar();
+}
+// Exponer para consola
+window.resetMalla = resetMalla;
+</script>
+
+</body>
+</html>
+Agrega index.html - malla
